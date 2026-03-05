@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronLeft, ChevronRight, ShoppingBag, Info, Mail, MapPin, MessageCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ShoppingBag, Info, Mail, MapPin, MessageCircle, X, Plus, Minus, ShoppingCart } from 'lucide-react';
 import { products, Product } from './types';
+
+const parsePrice = (priceStr: string): number => {
+  const match = priceStr.match(/\d+/);
+  return match ? parseInt(match[0]) : 0;
+};
 
 const AnimatedText = ({ text, className, delay = 0 }: { text: string; className?: string; delay?: number }) => {
   const words = text.split(" ");
@@ -37,7 +42,16 @@ const Page = ({ product, index, total, direction }: {
   const WHATSAPP_NUMBER = "22890989454";
 
   const handleOrder = () => {
-    const message = `Bonjour bkfamily, je souhaite commander :\n\nArticle : ${product.name}\nQuantité : ${quantity}\nCatégorie : ${product.category}\nPrix : ${product.price}`;
+    const unitPrice = parsePrice(product.price);
+    let message = `Bonjour bkfamily, je souhaite commander :\n\nArticle : ${product.name}\nQuantité : ${quantity}`;
+    
+    if (unitPrice > 0) {
+      const totalPrice = unitPrice * quantity;
+      message += `\nPrix Unitaire : ${product.price}\n*Total : ${totalPrice} FCFA*`;
+    } else {
+      message += `\nPrix : ${product.price}`;
+    }
+    
     const encodedMessage = encodeURIComponent(message);
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, '_blank');
   };
@@ -51,16 +65,16 @@ const Page = ({ product, index, total, direction }: {
       className="absolute inset-0 w-full h-full bg-white/80 backdrop-blur-xl shadow-2xl rounded-xl md:rounded-r-2xl overflow-hidden flex flex-col md:flex-row border border-white/20"
       style={{ transformOrigin: "left center", backfaceVisibility: "hidden" }}
     >
-      {/* Product Image Section */}
-      <div className="w-full md:w-1/2 h-48 md:h-full relative overflow-hidden group/img bg-white/20 backdrop-blur-md flex items-center justify-center p-6 md:p-12 border-b md:border-b-0 md:border-r border-white/10">
+      {/* Product Image Section - Made larger on mobile */}
+      <div className="w-full md:w-1/2 h-[50%] md:h-full relative overflow-hidden group/img bg-white/20 backdrop-blur-md flex items-center justify-center p-4 md:p-12 border-b md:border-b-0 md:border-r border-white/10">
         <motion.img 
           initial={{ scale: 0.8, opacity: 0, rotate: -10 }}
-          animate={{ scale: 1, opacity: 1, rotate: 0 }}
+          animate={{ scale: 1.1, opacity: 1, rotate: 0 }}
           transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 20 }}
-          whileHover={{ scale: 1.05, rotate: 2 }}
+          whileHover={{ scale: 1.15, rotate: 2 }}
           src={product.image} 
           alt={product.name}
-          className="max-w-full max-h-full object-contain drop-shadow-2xl"
+          className="max-w-[90%] max-h-[90%] object-contain drop-shadow-2xl"
           referrerPolicy="no-referrer"
         />
         <motion.div 
@@ -74,7 +88,7 @@ const Page = ({ product, index, total, direction }: {
       </div>
 
       {/* Product Info Section */}
-      <div className="w-full md:w-1/2 p-6 md:p-12 pb-24 md:pb-12 flex flex-col justify-center bg-gradient-to-br from-white/40 to-white/10 text-[#3d2b1f] overflow-y-auto">
+      <div className="w-full md:w-1/2 p-6 md:p-12 pb-24 md:pb-12 flex flex-col justify-center bg-gradient-to-br from-white/40 to-white/10 text-[#3d2b1f] overflow-y-auto custom-scrollbar">
         <motion.div 
           initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -86,13 +100,13 @@ const Page = ({ product, index, total, direction }: {
         
         <AnimatedText 
           text={product.name} 
-          className="text-3xl md:text-5xl font-serif font-light mb-4 md:mb-6 leading-tight tracking-tight"
+          className="text-2xl md:text-5xl font-serif font-light mb-2 md:mb-6 leading-tight tracking-tight"
           delay={0.4}
         />
         
         <AnimatedText 
           text={product.description} 
-          className="text-stone-600 text-sm md:text-base mb-6 md:mb-8 leading-relaxed font-light"
+          className="text-stone-600 text-xs md:text-base mb-4 md:mb-8 leading-relaxed font-light"
           delay={0.6}
         />
         
@@ -100,12 +114,12 @@ const Page = ({ product, index, total, direction }: {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.8 }}
-          className="flex flex-col gap-4 md:gap-6 mt-auto"
+          className="flex flex-col gap-3 md:gap-6 mt-auto"
         >
           <div className="flex items-center justify-between">
             <div className="cursor-default">
               <span className="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">Prix</span>
-              <span className="text-2xl md:text-3xl font-serif font-bold text-[#5c4033]">{product.price}</span>
+              <span className="text-xl md:text-3xl font-serif font-bold text-[#5c4033]">{product.price}</span>
             </div>
             
             <div className="flex items-center bg-white/50 backdrop-blur-md rounded-full p-1 border border-white/30 shadow-sm">
@@ -113,27 +127,29 @@ const Page = ({ product, index, total, direction }: {
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
                 className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white transition-all text-stone-600 active:scale-90"
               >
-                -
+                <Minus size={14} />
               </button>
               <span className="w-8 md:w-10 text-center font-medium text-sm">{quantity}</span>
               <button 
                 onClick={() => setQuantity(quantity + 1)}
                 className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white transition-all text-stone-600 active:scale-90"
               >
-                +
+                <Plus size={14} />
               </button>
             </div>
           </div>
 
-          <motion.button 
-            whileHover={{ scale: 1.02, y: -2 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleOrder}
-            className="bg-[#25D366] text-white px-6 py-3 md:py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-[#128C7E] transition-all shadow-lg hover:shadow-[#25D366]/30 group font-bold"
-          >
-            <MessageCircle size={20} fill="white" />
-            <span className="text-xs md:text-sm uppercase tracking-widest">Commander via WhatsApp</span>
-          </motion.button>
+          <div className="grid grid-cols-1 gap-2">
+            <motion.button 
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleOrder}
+              className="bg-[#25D366] text-white px-6 py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-[#128C7E] transition-all shadow-lg font-bold"
+            >
+              <MessageCircle size={20} fill="white" />
+              <span className="text-xs md:text-sm uppercase tracking-widest">Commander via WhatsApp</span>
+            </motion.button>
+          </div>
         </motion.div>
       </div>
     </motion.div>
@@ -216,7 +232,7 @@ const EndPage = ({ onRestart }: { onRestart: () => void; key?: React.Key }) => {
       initial={{ rotateY: 90, opacity: 0, scale: 0.9 }}
       animate={{ rotateY: 0, opacity: 1, scale: 1 }}
       transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-      className="absolute inset-0 bg-[#3d2b1f]/95 backdrop-blur-2xl text-[#fffcf5] flex flex-col items-center justify-center p-6 md:p-12 pb-24 md:pb-12 text-center shadow-2xl rounded-xl md:rounded-r-2xl border border-white/10 overflow-y-auto"
+      className="absolute inset-0 bg-[#3d2b1f]/95 backdrop-blur-2xl text-[#fffcf5] flex flex-col items-center justify-center p-6 md:p-12 pb-24 md:pb-12 text-center shadow-2xl rounded-xl md:rounded-r-2xl border border-white/10 overflow-y-auto custom-scrollbar"
       style={{ transformOrigin: "left center" }}
     >
       <motion.div
@@ -311,14 +327,8 @@ export default function App() {
     }
   };
 
-  const switchCategory = (cat: string) => {
-    setActiveCategory(cat);
-    setCurrentPage(-1);
-    setDirection(0);
-  };
-
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start md:justify-center p-4 md:p-8 overflow-x-hidden overflow-y-auto bg-[#1a120d] pt-8 pb-32 md:py-20">
+    <div className="min-h-screen flex flex-col items-center justify-start md:justify-center p-4 md:p-12 overflow-x-hidden bg-[#1a120d] pt-8 pb-32 md:py-24">
       {/* Background Decorative Elements */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden bg-[#1a120d] z-0">
         <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#5c4033 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
@@ -327,12 +337,14 @@ export default function App() {
       </div>
 
       {/* Book Wrapper with Perspective */}
-      <div className="relative z-10 w-full max-w-7xl perspective-1000">
+      <div className="relative z-10 w-full max-w-6xl perspective-1000">
         {/* Book Container */}
-        <div className="relative w-full aspect-[4/7] md:aspect-[16/10] flex flex-col md:flex-row shadow-2xl rounded-2xl overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 mb-8 md:mb-0">
+        <div className="relative w-full aspect-[4/7] md:aspect-[16/9] lg:aspect-[16/8] flex flex-col md:flex-row shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 mb-8 md:mb-0">
           
           {/* Left Side (Static Spine/Back) */}
-          <div className="hidden md:block w-14 bg-gradient-to-r from-[#1a120d] to-[#2b1d14] shadow-inner border-r border-black/30" />
+          <div className="hidden md:block w-16 bg-gradient-to-r from-[#1a120d] via-[#2b1d14] to-[#3d2b1f] shadow-[inset_-10px_0_20px_rgba(0,0,0,0.5)] border-r border-black/40 relative">
+            <div className="absolute inset-y-0 right-0 w-px bg-white/5" />
+          </div>
 
           {/* Right Side (Flipping Pages) */}
           <div className="flex-1 relative overflow-hidden">
@@ -379,7 +391,7 @@ export default function App() {
       </div>
 
       {/* Info Icon */}
-      <div className="fixed top-8 right-8 text-stone-400 hover:text-stone-600 transition-colors cursor-help">
+      <div className="fixed top-8 left-8 text-stone-400 hover:text-stone-600 transition-colors cursor-help z-50">
         <Info size={20} />
       </div>
     </div>
