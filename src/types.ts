@@ -12,7 +12,7 @@ export const products: Product[] = [
     id: 1,
     name: "Biscuit Crousti-Bueno",
     description: "Un biscuit croustillant fourré d'une crème onctueuse aux noisettes, nappé d'un délicieux chocolat au lait. L'expérience Kinder Bueno revisitée par bkfamily.",
-    price: "700 FCFA",
+    price: "800 FCFA",
     image: "https://imgs.search.brave.com/jX_6yTGeHfd6d0xEpV9_h4CVNMwS6KmwM1CDMncjlag/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly90YXJn/ZXQuc2NlbmU3LmNv/bS9pcy9pbWFnZS9U/YXJnZXQvR1VFU1Rf/YzNhMTA3OGYtMDFm/My00MDQ5LTg4MWYt/YTAyZjgzNzJhZDk1/P3dpZD04MDAmaGVp/PTgwMCZxbHQ9ODAm/Zm10PXBqcGVn",
     category: "Biscuits Chocolat"
   },
@@ -44,7 +44,7 @@ export const products: Product[] = [
     id: 5,
     name: "Chocolat Bostani Thin & Filled",
     description: "Une finesse incomparable et un cœur fondant. Les chocolats Bostani Thin & Filled offrent une harmonie parfaite entre craquant et onctuosité.",
-    price: "Prix sur demande",
+    price: "11000 FCFA",
     image: "https://imgs.search.brave.com/9Z4dl2AHte2LL82BMU_cY9nGGJLhoF7zj--juvvpDJs/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93d3cu/a2lvc2NsdWIuY29t/L2Nkbi9zaG9wL2Zp/bGVzL2ZvdG9zc2hv/cGkyTWVzYWRldHJh/YmFqbzEwLTEwMC5q/cGc_dj0xNzQxMzcz/ODg0JndpZHRoPTQ2/MA",
     category: "Chocolat"
   },
