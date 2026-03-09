@@ -10,10 +10,10 @@ export interface Product {
 export const products: Product[] = [
   {
     id: 1,
-    name: "Biscuit Crousti-Bueno",
+    name: "Kinder Bueno",
     description: "Un biscuit croustillant fourré d'une crème onctueuse aux noisettes, nappé d'un délicieux chocolat au lait. L'expérience Kinder Bueno revisitée par bkfamily.",
     price: "800 FCFA",
-    image: "https://imgs.search.brave.com/jX_6yTGeHfd6d0xEpV9_h4CVNMwS6KmwM1CDMncjlag/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly90YXJn/ZXQuc2NlbmU3LmNv/bS9pcy9pbWFnZS9U/YXJnZXQvR1VFU1Rf/YzNhMTA3OGYtMDFm/My00MDQ5LTg4MWYt/YTAyZjgzNzJhZDk1/P3dpZD04MDAmaGVp/PTgwMCZxbHQ9ODAm/Zm10PXBqcGVn",
+    image: "https://image2url.com/r2/default/images/1773055667621-7510d2ce-5e65-446e-a1ec-cf634c26ca41.png",
     category: "Biscuits Chocolat"
   },
   {

@@ -39,6 +39,7 @@ const Page = ({ product, index, total, direction }: {
   key?: React.Key;
 }) => {
   const [quantity, setQuantity] = useState(1);
+  const [isVideoLoading, setIsVideoLoading] = useState(true);
   const WHATSAPP_NUMBER = "22890989454";
 
   const handleOrder = () => {
@@ -62,51 +63,127 @@ const Page = ({ product, index, total, direction }: {
       animate={{ rotateY: 0, opacity: 1, scale: 1 }}
       exit={{ rotateY: direction > 0 ? -90 : 90, opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-      className="absolute inset-0 w-full h-full bg-white/80 backdrop-blur-xl shadow-2xl rounded-xl md:rounded-r-2xl overflow-hidden flex flex-col md:flex-row border border-white/20"
-      style={{ transformOrigin: "left center", backfaceVisibility: "hidden" }}
+      className="absolute inset-0 w-full h-full bg-stone-900/40 backdrop-blur-xl shadow-2xl rounded-xl md:rounded-r-2xl overflow-hidden flex flex-col md:flex-row border border-white/10"
+      style={{ 
+        transformOrigin: "left center", 
+        backfaceVisibility: "hidden",
+        willChange: "transform, opacity"
+      }}
     >
-      {/* Product Image Section - Made larger on mobile */}
-      <div className="w-full md:w-1/2 h-[50%] md:h-full relative overflow-hidden group/img bg-white/20 backdrop-blur-md flex items-center justify-center p-4 md:p-12 border-b md:border-b-0 md:border-r border-white/10">
-        <motion.img 
-          initial={{ scale: 0.8, opacity: 0, rotate: -10 }}
-          animate={{ scale: 1.1, opacity: 1, rotate: 0 }}
-          transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 20 }}
-          whileHover={{ scale: 1.15, rotate: 2 }}
-          src={product.image} 
-          alt={product.name}
-          className="max-w-[90%] max-h-[90%] object-contain drop-shadow-2xl"
-          referrerPolicy="no-referrer"
-        />
+      {/* Product Image Section - Made larger on mobile with Levitation Effect */}
+      <div className={`w-full md:w-1/2 h-[50%] md:h-full relative overflow-hidden group/img flex items-center justify-center ${product.name === "Kinder Bueno" ? "p-0" : "p-4 md:p-12"}`}>
+        <div className="relative w-full h-full flex items-center justify-center">
+          {product.name === "Kinder Bueno" ? (
+            <div className="relative w-full h-full">
+              {isVideoLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-stone-900/20 backdrop-blur-md z-20">
+                  <motion.div 
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full"
+                  />
+                </div>
+              )}
+              <motion.video
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isVideoLoading ? 0 : 1 }}
+                transition={{ duration: 0.8 }}
+                src="https://image2url.com/r2/default/videos/1773063494650-5da6f4ce-0781-4068-8694-7ddf5829e551.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                onCanPlayThrough={() => setIsVideoLoading(false)}
+                className="w-full h-full object-cover z-10 relative"
+              />
+              {/* Seamless transition gradients */}
+              <div className="absolute inset-0 z-11 pointer-events-none">
+                {/* Desktop: Fade to right */}
+                <div className="hidden md:block absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-black/60 to-transparent" />
+                {/* Mobile: Fade to bottom */}
+                <div className="md:hidden absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/60 to-transparent" />
+                {/* General subtle overlay */}
+                <div className="absolute inset-0 bg-black/10" />
+              </div>
+            </div>
+          ) : (
+            <div className="relative w-full h-full flex items-center justify-center">
+              {/* Main Product Image */}
+              <div className="relative flex-1 flex items-center justify-center">
+                {/* Levitation Shadow */}
+                <motion.div 
+                  animate={{ 
+                    scale: [1, 0.7, 1],
+                    opacity: [0.3, 0.15, 0.3],
+                    filter: ["blur(12px)", "blur(16px)", "blur(12px)"]
+                  }}
+                  transition={{ 
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="absolute bottom-[15%] w-24 md:w-32 h-4 md:h-6 bg-black/20 rounded-[100%] z-0"
+                />
+
+                <motion.img 
+                  initial={{ scale: 0.8, opacity: 0, rotate: -10 }}
+                  animate={{ 
+                    scale: 1, 
+                    opacity: 1, 
+                    rotate: 0,
+                    y: [0, -20, 0] 
+                  }}
+                  transition={{ 
+                    y: {
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    },
+                    default: { delay: 0.2, type: "spring", stiffness: 200, damping: 20 }
+                  }}
+                  whileHover={{ scale: 1.05, rotate: 2 }}
+                  src={product.image} 
+                  alt={product.name}
+                  className="max-w-full max-h-[80%] object-contain drop-shadow-2xl z-10 relative"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+        
         <motion.div 
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="absolute top-4 left-4 bg-white/40 backdrop-blur-md px-3 py-1 rounded-full text-[9px] md:text-[10px] uppercase tracking-widest font-bold text-[#3d2b1f] border border-white/20"
+          className="absolute top-4 left-4 bg-black/60 backdrop-blur-xl px-4 py-1.5 rounded-full text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-bold text-white border border-white/20 z-30 shadow-lg"
         >
           {product.category}
         </motion.div>
       </div>
 
       {/* Product Info Section */}
-      <div className="w-full md:w-1/2 p-6 md:p-12 pb-24 md:pb-12 flex flex-col justify-center bg-gradient-to-br from-white/40 to-white/10 text-[#3d2b1f] overflow-y-auto custom-scrollbar">
+      <div className="w-full md:w-1/2 p-6 md:p-12 pb-24 md:pb-12 flex flex-col justify-center text-[#fffcf5] overflow-y-auto custom-scrollbar relative z-20">
+        {/* Subtle background glow to separate from image slightly without a line */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent pointer-events-none -z-10" />
         <motion.div 
           initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="mb-2 text-xs md:text-sm font-serif italic text-stone-500"
+          className="mb-2 text-xs md:text-sm font-serif italic text-stone-400"
         >
           bkfamily — {index + 1} / {total}
         </motion.div>
         
         <AnimatedText 
           text={product.name} 
-          className="text-2xl md:text-5xl font-serif font-light mb-2 md:mb-6 leading-tight tracking-tight"
+          className="text-2xl md:text-5xl font-serif font-light mb-2 md:mb-6 leading-tight tracking-tight text-white"
           delay={0.4}
         />
         
         <AnimatedText 
           text={product.description} 
-          className="text-stone-600 text-xs md:text-base mb-4 md:mb-8 leading-relaxed font-light"
+          className="text-stone-300 text-xs md:text-base mb-4 md:mb-8 leading-relaxed font-light"
           delay={0.6}
         />
         
@@ -119,20 +196,20 @@ const Page = ({ product, index, total, direction }: {
           <div className="flex items-center justify-between">
             <div className="cursor-default">
               <span className="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">Prix</span>
-              <span className="text-xl md:text-3xl font-serif font-bold text-[#5c4033]">{product.price}</span>
+              <span className="text-xl md:text-3xl font-serif font-bold text-white">{product.price}</span>
             </div>
             
-            <div className="flex items-center bg-white/50 backdrop-blur-md rounded-full p-1 border border-white/30 shadow-sm">
+            <div className="flex items-center bg-black/40 backdrop-blur-md rounded-full p-1 border border-white/10 shadow-sm text-white">
               <button 
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white transition-all text-stone-600 active:scale-90"
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-all text-white active:scale-90"
               >
                 <Minus size={14} />
               </button>
               <span className="w-8 md:w-10 text-center font-medium text-sm">{quantity}</span>
               <button 
                 onClick={() => setQuantity(quantity + 1)}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white transition-all text-stone-600 active:scale-90"
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-all text-white active:scale-90"
               >
                 <Plus size={14} />
               </button>
@@ -163,18 +240,15 @@ const Cover = ({ onStart }: { onStart: () => void; key?: React.Key }) => {
       animate={{ opacity: 1 }}
       exit={{ rotateY: -90, opacity: 0 }}
       transition={{ duration: 0.8 }}
-      className="absolute inset-0 bg-[#3d2b1f] text-[#fffcf5] flex flex-col items-center justify-center p-12 pb-24 md:pb-12 text-center shadow-2xl rounded-r-lg border-l border-white/10 overflow-hidden"
-      style={{ transformOrigin: "left center" }}
+      className="absolute inset-0 bg-stone-900/40 backdrop-blur-xl text-[#fffcf5] flex flex-col items-center justify-center p-12 pb-24 md:pb-12 text-center shadow-2xl rounded-r-lg border-l border-white/10 overflow-hidden"
+      style={{ 
+        transformOrigin: "left center",
+        willChange: "transform, opacity"
+      }}
     >
-      {/* Background Image with Overlay */}
+      {/* Background Overlay */}
       <div className="absolute inset-0 z-0">
-        <img 
-          src="https://picsum.photos/seed/gourmet/1200/800?blur=2" 
-          alt="Background" 
-          className="w-full h-full object-cover opacity-30"
-          referrerPolicy="no-referrer"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#3d2b1f]/80 via-[#3d2b1f]/60 to-[#3d2b1f]/90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1a120d]/90 via-[#1a120d]/70 to-[#1a120d]/95" />
       </div>
 
       <div className="relative z-10 flex flex-col items-center">
@@ -232,7 +306,7 @@ const EndPage = ({ onRestart }: { onRestart: () => void; key?: React.Key }) => {
       initial={{ rotateY: 90, opacity: 0, scale: 0.9 }}
       animate={{ rotateY: 0, opacity: 1, scale: 1 }}
       transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-      className="absolute inset-0 bg-[#3d2b1f]/95 backdrop-blur-2xl text-[#fffcf5] flex flex-col items-center justify-center p-6 md:p-12 pb-24 md:pb-12 text-center shadow-2xl rounded-xl md:rounded-r-2xl border border-white/10 overflow-y-auto custom-scrollbar"
+      className="absolute inset-0 bg-stone-900/40 backdrop-blur-3xl text-[#fffcf5] flex flex-col items-center justify-center p-6 md:p-12 pb-24 md:pb-12 text-center shadow-2xl rounded-xl md:rounded-r-2xl border border-white/10 overflow-y-auto custom-scrollbar"
       style={{ transformOrigin: "left center" }}
     >
       <motion.div
@@ -328,18 +402,19 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start md:justify-center p-4 md:p-12 overflow-x-hidden bg-[#1a120d] pt-8 pb-32 md:py-24">
-      {/* Background Decorative Elements */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden bg-[#1a120d] z-0">
-        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#5c4033 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#5c4033]/30 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[#3d2b1f]/40 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
+    <div className="min-h-screen flex flex-col items-center justify-start md:justify-center p-4 md:p-12 overflow-x-hidden bg-[#1a120d] pt-8 pb-32 md:py-24 relative">
+      {/* Glass Background Effect */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-[#2b1d14]" />
+        <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-[#5c4033]/40 rounded-full blur-[80px] animate-pulse" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-[#3d2b1f]/50 rounded-full blur-[80px] animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute inset-0 backdrop-blur-2xl" />
       </div>
 
       {/* Book Wrapper with Perspective */}
       <div className="relative z-10 w-full max-w-6xl perspective-1000">
         {/* Book Container */}
-        <div className="relative w-full aspect-[4/7] md:aspect-[16/9] lg:aspect-[16/8] flex flex-col md:flex-row shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 mb-8 md:mb-0">
+        <div className="relative w-full aspect-[4/7] md:aspect-[16/9] lg:aspect-[16/8] flex flex-col md:flex-row shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden bg-stone-900/20 backdrop-blur-xl border border-white/10 mb-8 md:mb-0">
           
           {/* Left Side (Static Spine/Back) */}
           <div className="hidden md:block w-16 bg-gradient-to-r from-[#1a120d] via-[#2b1d14] to-[#3d2b1f] shadow-[inset_-10px_0_20px_rgba(0,0,0,0.5)] border-r border-black/40 relative">
