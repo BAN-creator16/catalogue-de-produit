@@ -42,6 +42,12 @@ const Page = ({ product, index, total, direction }: {
   const [isVideoLoading, setIsVideoLoading] = useState(true);
   const WHATSAPP_NUMBER = "22890989454";
 
+  const productVideos: Record<string, string> = {
+    "Kinder Bueno": "https://image2url.com/r2/default/videos/1773063494650-5da6f4ce-0781-4068-8694-7ddf5829e551.mp4",
+    "Mini M&M'S": "https://image2url.com/r2/default/videos/1773066092696-402ef6bb-19be-4578-bc89-a548c098eb36.mp4"
+  };
+  const videoUrl = productVideos[product.name];
+
   const handleOrder = () => {
     const unitPrice = parsePrice(product.price);
     let message = `Bonjour bkfamily, je souhaite commander :\n\nArticle : ${product.name}\nQuantité : ${quantity}`;
@@ -63,17 +69,33 @@ const Page = ({ product, index, total, direction }: {
       animate={{ rotateY: 0, opacity: 1, scale: 1 }}
       exit={{ rotateY: direction > 0 ? -90 : 90, opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-      className="absolute inset-0 w-full h-full bg-stone-900/40 backdrop-blur-xl shadow-2xl rounded-xl md:rounded-r-2xl overflow-hidden flex flex-col md:flex-row border border-white/10"
+      className={`absolute inset-0 w-full h-full shadow-2xl rounded-xl md:rounded-r-2xl overflow-hidden flex flex-col md:flex-row border border-white/10 ${
+        product.name === "Mini M&M'S" 
+          ? "bg-white/40 backdrop-blur-3xl" 
+          : "bg-stone-900/40 backdrop-blur-xl"
+      }`}
       style={{ 
         transformOrigin: "left center", 
         backfaceVisibility: "hidden",
         willChange: "transform, opacity"
       }}
     >
+      {/* Background Elements for M&M'S - Trapped in ice effect */}
+      {product.name === "Mini M&M'S" && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+          <div className="absolute top-[10%] left-[5%] w-32 h-32 bg-red-500/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute top-[40%] right-[10%] w-40 h-40 bg-yellow-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute bottom-[20%] left-[15%] w-36 h-36 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+          <div className="absolute top-[60%] left-[40%] w-28 h-28 bg-green-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }} />
+          <div className="absolute bottom-[10%] right-[30%] w-32 h-32 bg-orange-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '0.5s' }} />
+          {/* Frost texture overlay */}
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/ice-age.png')] opacity-10 mix-blend-overlay" />
+        </div>
+      )}
       {/* Product Image Section - Made larger on mobile with Levitation Effect */}
-      <div className={`w-full md:w-1/2 h-[50%] md:h-full relative overflow-hidden group/img flex items-center justify-center ${product.name === "Kinder Bueno" ? "p-0" : "p-4 md:p-12"}`}>
+      <div className={`w-full md:w-1/2 h-[50%] md:h-full relative overflow-hidden group/img flex items-center justify-center ${videoUrl ? "p-0" : "p-4 md:p-12"}`}>
         <div className="relative w-full h-full flex items-center justify-center">
-          {product.name === "Kinder Bueno" ? (
+          {videoUrl ? (
             <div className="relative w-full h-full">
               {isVideoLoading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-stone-900/20 backdrop-blur-md z-20">
@@ -85,15 +107,21 @@ const Page = ({ product, index, total, direction }: {
                 </div>
               )}
               <motion.video
-                initial={{ opacity: 0 }}
-                animate={{ opacity: isVideoLoading ? 0 : 1 }}
-                transition={{ duration: 0.8 }}
-                src="https://image2url.com/r2/default/videos/1773063494650-5da6f4ce-0781-4068-8694-7ddf5829e551.mp4"
+                key={videoUrl}
+                initial={{ opacity: 0, scale: 1.1 }}
+                animate={{ 
+                  opacity: isVideoLoading ? 0 : 1
+                }}
+                transition={{ 
+                  opacity: { duration: 0.5 }
+                }}
+                src={videoUrl}
                 autoPlay
                 loop
                 muted
                 playsInline
-                onCanPlayThrough={() => setIsVideoLoading(false)}
+                preload="auto"
+                onLoadedData={() => setIsVideoLoading(false)}
                 className="w-full h-full object-cover z-10 relative"
               />
               {/* Seamless transition gradients */}
@@ -130,15 +158,9 @@ const Page = ({ product, index, total, direction }: {
                   animate={{ 
                     scale: 1, 
                     opacity: 1, 
-                    rotate: 0,
-                    y: [0, -20, 0] 
+                    rotate: 0
                   }}
                   transition={{ 
-                    y: {
-                      duration: 4,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    },
                     default: { delay: 0.2, type: "spring", stiffness: 200, damping: 20 }
                   }}
                   whileHover={{ scale: 1.05, rotate: 2 }}
@@ -163,9 +185,9 @@ const Page = ({ product, index, total, direction }: {
       </div>
 
       {/* Product Info Section */}
-      <div className="w-full md:w-1/2 p-6 md:p-12 pb-24 md:pb-12 flex flex-col justify-center text-[#fffcf5] overflow-y-auto custom-scrollbar relative z-20">
+      <div className={`w-full md:w-1/2 p-6 md:p-12 pb-24 md:pb-12 flex flex-col justify-center overflow-y-auto custom-scrollbar relative z-20 ${product.name === "Mini M&M'S" ? "text-stone-900" : "text-[#fffcf5]"}`}>
         {/* Subtle background glow to separate from image slightly without a line */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent pointer-events-none -z-10" />
+        <div className={`absolute inset-0 bg-gradient-to-br pointer-events-none -z-10 ${product.name === "Mini M&M'S" ? "from-white/40 to-transparent" : "from-black/20 to-transparent"}`} />
         <motion.div 
           initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -177,13 +199,13 @@ const Page = ({ product, index, total, direction }: {
         
         <AnimatedText 
           text={product.name} 
-          className="text-2xl md:text-5xl font-serif font-light mb-2 md:mb-6 leading-tight tracking-tight text-white"
+          className={`text-2xl md:text-5xl font-serif font-light mb-2 md:mb-6 leading-tight tracking-tight ${product.name === "Mini M&M'S" ? "text-stone-900" : "text-white"}`}
           delay={0.4}
         />
         
         <AnimatedText 
           text={product.description} 
-          className="text-stone-300 text-xs md:text-base mb-4 md:mb-8 leading-relaxed font-light"
+          className={`${product.name === "Mini M&M'S" ? "text-stone-600" : "text-stone-300"} text-xs md:text-base mb-4 md:mb-8 leading-relaxed font-light`}
           delay={0.6}
         />
         
@@ -195,21 +217,21 @@ const Page = ({ product, index, total, direction }: {
         >
           <div className="flex items-center justify-between">
             <div className="cursor-default">
-              <span className="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">Prix</span>
-              <span className="text-xl md:text-3xl font-serif font-bold text-white">{product.price}</span>
+              <span className={`block text-[10px] uppercase tracking-widest ${product.name === "Mini M&M'S" ? "text-stone-500" : "text-stone-400"} mb-1`}>Prix</span>
+              <span className={`text-xl md:text-3xl font-serif font-bold ${product.name === "Mini M&M'S" ? "text-stone-900" : "text-white"}`}>{product.price}</span>
             </div>
             
-            <div className="flex items-center bg-black/40 backdrop-blur-md rounded-full p-1 border border-white/10 shadow-sm text-white">
+            <div className={`flex items-center ${product.name === "Mini M&M'S" ? "bg-white/60 text-stone-900 border-black/10" : "bg-black/40 text-white border-white/10"} backdrop-blur-md rounded-full p-1 border shadow-sm`}>
               <button 
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-all text-white active:scale-90"
+                className={`w-8 h-8 flex items-center justify-center rounded-full ${product.name === "Mini M&M'S" ? "hover:bg-black/5" : "hover:bg-white/20"} transition-all active:scale-90`}
               >
                 <Minus size={14} />
               </button>
               <span className="w-8 md:w-10 text-center font-medium text-sm">{quantity}</span>
               <button 
                 onClick={() => setQuantity(quantity + 1)}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-all text-white active:scale-90"
+                className={`w-8 h-8 flex items-center justify-center rounded-full ${product.name === "Mini M&M'S" ? "hover:bg-black/5" : "hover:bg-white/20"} transition-all active:scale-90`}
               >
                 <Plus size={14} />
               </button>
