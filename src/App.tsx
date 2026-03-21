@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useMotionValueEvent } from 'motion/react';
 import { ChevronLeft, ChevronRight, ShoppingBag, Info, Mail, MapPin, MessageCircle, X, Plus, Minus, ShoppingCart } from 'lucide-react';
 import { products, Product } from './types';
 
@@ -256,13 +256,130 @@ const Page = ({ product, index, total, direction }: {
 };
 
 const Cover = ({ onStart }: { onStart: () => void; key?: React.Key }) => {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const apiRef = useRef<any>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  const springConfig = { damping: 20, stiffness: 100 };
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [20, -20]), springConfig);
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-30, 30]), springConfig);
+
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth) - 0.5;
+      const y = (e.clientY / window.innerHeight) - 0.5;
+      mouseX.set(x);
+      mouseY.set(y);
+    };
+
+    window.addEventListener('mousemove', handleGlobalMouseMove);
+
+    let interval: any;
+    const initSketchfab = () => {
+      if (!iframeRef.current || !(window as any).Sketchfab) return false;
+      
+      const client = new (window as any).Sketchfab('1.12.1', iframeRef.current);
+      client.init('99a623a4cbd84b8488050ac8162705b5', {
+        success: (api: any) => {
+          api.start();
+          api.addEventListener('viewerready', () => {
+            apiRef.current = api;
+            setIsLoaded(true);
+            // Set initial camera position (targetZ = 6 to move rabbit down)
+            api.setCameraLookAt([0, -20, 6], [0, 0, 6], 0);
+          });
+        },
+        error: () => {
+          console.error('Sketchfab API error');
+        },
+        autostart: 1,
+        preload: 1,
+        transparent: 1,
+        ui_controls: 0,
+        ui_infos: 0,
+        ui_inspector: 0,
+        ui_stop: 0,
+        ui_watermark: 0,
+        ui_hint: 0,
+        double_click: 0,
+        scrollwheel: 0,
+        navigation: 0
+      });
+      return true;
+    };
+
+    // Retry initialization if script not ready
+    if (!initSketchfab()) {
+      interval = setInterval(() => {
+        if (initSketchfab()) clearInterval(interval);
+      }, 500);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleGlobalMouseMove);
+      if (interval) clearInterval(interval);
+    };
+  }, []);
+
+  // Update camera based on mouse movement with maximum sensitivity
+  useMotionValueEvent(mouseX, "change", (x) => {
+    if (apiRef.current && isLoaded && apiRef.current.setCameraLookAt) {
+      const y = mouseY.get();
+      // theta (horizontal rotation)
+      const theta = x * 2; 
+      const phi = y * 1.5;
+      
+      const radius = 20;
+      const targetZ = 6; // Offset to move the rabbit down in the frame
+      const camX = radius * Math.sin(theta) * Math.cos(phi);
+      const camY = -radius * Math.cos(theta) * Math.cos(phi);
+      const camZ = radius * Math.sin(phi) + targetZ;
+      
+      apiRef.current.setCameraLookAt([camX, camY, camZ], [0, 0, targetZ], 0);
+    }
+  });
+
+  useMotionValueEvent(mouseY, "change", (y) => {
+    if (apiRef.current && isLoaded && apiRef.current.setCameraLookAt) {
+      const x = mouseX.get();
+      const theta = x * 2;
+      const phi = y * 1.5;
+      
+      const radius = 20;
+      const targetZ = 6; // Offset to move the rabbit down in the frame
+      const camX = radius * Math.sin(theta) * Math.cos(phi);
+      const camY = -radius * Math.cos(theta) * Math.cos(phi);
+      const camZ = radius * Math.sin(phi) + targetZ;
+      
+      apiRef.current.setCameraLookAt([camX, camY, camZ], [0, 0, targetZ], 0);
+    }
+  });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+    if (apiRef.current && isLoaded && apiRef.current.setCameraLookAt) {
+      apiRef.current.setCameraLookAt([0, -20, 6], [0, 0, 6], 1.5); // Smooth return
+    }
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ rotateY: -90, opacity: 0 }}
       transition={{ duration: 0.8 }}
-      className="absolute inset-0 bg-stone-900/40 backdrop-blur-xl text-[#fffcf5] flex flex-col items-center justify-center p-12 pb-24 md:pb-12 text-center shadow-2xl rounded-r-lg border-l border-white/10 overflow-hidden"
+      className="absolute inset-0 bg-stone-900/40 backdrop-blur-xl text-[#fffcf5] flex flex-col items-center justify-center p-8 md:p-12 pb-24 md:pb-12 text-center shadow-2xl rounded-r-lg border-l border-white/10 overflow-hidden"
       style={{ 
         transformOrigin: "left center",
         willChange: "transform, opacity"
@@ -273,49 +390,87 @@ const Cover = ({ onStart }: { onStart: () => void; key?: React.Key }) => {
         <div className="absolute inset-0 bg-gradient-to-b from-[#1a120d]/90 via-[#1a120d]/70 to-[#1a120d]/95" />
       </div>
 
-      <div className="relative z-10 flex flex-col items-center">
-        <motion.div 
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
-          className="w-24 h-px bg-white/30 mb-8" 
-        />
-        <motion.h1 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          className="text-6xl md:text-8xl font-serif italic mb-4 drop-shadow-lg"
+      <div className="relative z-10 flex flex-col md:flex-row items-center justify-center w-full max-w-6xl gap-8 md:gap-16">
+        {/* Left Side: Text Content */}
+        <div className="flex flex-col items-center md:items-start text-center md:text-left flex-1 order-2 md:order-1">
+          <motion.div 
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="w-24 h-px bg-white/30 mb-8 hidden md:block" 
+          />
+          <motion.h1 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="text-5xl md:text-8xl font-serif italic mb-4 drop-shadow-lg"
+          >
+            bkfamily
+          </motion.h1>
+          <motion.p 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
+            className="text-xs md:text-lg tracking-[0.4em] uppercase font-light mb-8 md:mb-12 opacity-80"
+          >
+            Douceurs & Célébrations
+          </motion.p>
+          
+          <motion.div 
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.8 }}
+            className="w-24 h-px bg-white/30 mb-8 md:mb-12" 
+          />
+          
+          <motion.button 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 1, duration: 0.8 }}
+            onClick={onStart}
+            className="bg-white/10 backdrop-blur-md border border-white/20 px-8 md:px-10 py-3 md:py-4 rounded-full hover:bg-[#fffcf5] hover:text-[#3d2b1f] transition-all duration-500 group flex items-center gap-3 shadow-xl"
+          >
+            <span className="text-xs md:text-sm tracking-widest uppercase font-medium">Explorer le Catalogue</span>
+            <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+          </motion.button>
+        </div>
+
+        {/* Right Side: 3D Model with Tilt Effect */}
+        <motion.div
+          initial={{ y: 40, opacity: 0, scale: 0.9 }}
+          animate={{ y: 20, opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 1 }}
+          style={{ 
+            rotateX, 
+            rotateY, 
+            perspective: 1200,
+            transformStyle: "preserve-3d"
+          }}
+          className="flex-1 w-full max-w-md aspect-square md:aspect-auto md:h-[450px] relative rounded-3xl overflow-hidden border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-black/20 backdrop-blur-sm order-1 md:order-2 mt-4 md:mt-8"
         >
-          bkfamily
-        </motion.h1>
-        <motion.p 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.8 }}
-          className="text-sm md:text-lg tracking-[0.4em] uppercase font-light mb-12 opacity-80"
-        >
-          Douceurs & Célébrations
-        </motion.p>
-        <motion.div 
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.8 }}
-          className="w-24 h-px bg-white/30 mb-12" 
-        />
-        
-        <motion.button 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 1, duration: 0.8 }}
-          onClick={onStart}
-          className="bg-white/10 backdrop-blur-md border border-white/20 px-10 py-4 rounded-full hover:bg-[#fffcf5] hover:text-[#3d2b1f] transition-all duration-500 group flex items-center gap-3 shadow-xl"
-        >
-          <span className="text-sm tracking-widest uppercase font-medium">Explorer le Catalogue</span>
-          <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
-        </motion.button>
+          <iframe
+            ref={iframeRef}
+            title="bkfamily 3D Experience"
+            frameBorder="0"
+            allowFullScreen
+            allow="autoplay; fullscreen; xr-spatial-tracking"
+            src="https://sketchfab.com/models/99a623a4cbd84b8488050ac8162705b5/embed?autostart=1&preload=1&transparent=1&ui_controls=0&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=0&ui_hint=0"
+            className="w-full h-full pointer-events-none z-10"
+          ></iframe>
+          
+          {/* Interaction Hint Overlay */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ delay: 2, duration: 3, repeat: Infinity, repeatDelay: 5 }}
+            className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-none bg-white/10 backdrop-blur-md px-4 py-2 rounded-full text-[8px] uppercase tracking-widest border border-white/20 whitespace-nowrap z-30"
+          >
+            Le lapin suit votre regard
+          </motion.div>
+        </motion.div>
       </div>
       
-      <div className="absolute bottom-12 text-[10px] tracking-[0.3em] uppercase opacity-40 z-10">
+      <div className="absolute bottom-8 md:bottom-12 text-[8px] md:text-[10px] tracking-[0.3em] uppercase opacity-40 z-10">
         L'Art de Recevoir — Depuis 2026
       </div>
     </motion.div>
