@@ -168,6 +168,8 @@ const Page = ({ product, index, total, direction }: {
                   alt={product.name}
                   className="max-w-full max-h-[80%] object-contain drop-shadow-2xl z-10 relative"
                   referrerPolicy="no-referrer"
+                  loading={index === 0 ? "eager" : "lazy"}
+                  decoding="async"
                 />
               </div>
             </div>
@@ -289,7 +291,18 @@ const Cover = ({ onStart }: { onStart: () => void; key?: React.Key }) => {
       mouseY.set(y);
     };
 
+    const handleGlobalTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        const x = (e.touches[0].clientX / window.innerWidth) - 0.5;
+        const y = (e.touches[0].clientY / window.innerHeight) - 0.5;
+        mouseX.set(x);
+        mouseY.set(y);
+      }
+    };
+
     window.addEventListener('mousemove', handleGlobalMouseMove);
+    window.addEventListener('touchmove', handleGlobalTouchMove, { passive: true });
+    window.addEventListener('touchstart', handleGlobalTouchMove, { passive: true });
 
     let interval: any;
     const initSketchfab = () => {
@@ -334,6 +347,8 @@ const Cover = ({ onStart }: { onStart: () => void; key?: React.Key }) => {
 
     return () => {
       window.removeEventListener('mousemove', handleGlobalMouseMove);
+      window.removeEventListener('touchmove', handleGlobalTouchMove);
+      window.removeEventListener('touchstart', handleGlobalTouchMove);
       if (interval) clearInterval(interval);
     };
   }, []);
@@ -461,7 +476,7 @@ const Cover = ({ onStart }: { onStart: () => void; key?: React.Key }) => {
             perspective: 1200,
             transformStyle: "preserve-3d"
           }}
-          className="flex-1 w-full max-w-md aspect-square md:aspect-auto md:h-[450px] relative rounded-3xl overflow-hidden border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-black/20 backdrop-blur-sm order-1 md:order-2 mt-4 md:mt-8"
+          className="flex-1 w-full max-w-md h-[300px] md:h-[450px] relative rounded-3xl overflow-hidden border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-black/20 backdrop-blur-sm order-1 md:order-2 mt-4 md:mt-8"
         >
           <iframe
             ref={iframeRef}
@@ -572,6 +587,14 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState(-1);
   const [direction, setDirection] = useState(0);
   const [activeCategory, setActiveCategory] = useState('Tous');
+
+  // Preload images for faster rendering
+  useEffect(() => {
+    products.forEach(product => {
+      const img = new Image();
+      img.src = product.image;
+    });
+  }, []);
 
   const categories = ['Tous', ...Array.from(new Set(products.map(p => p.category)))];
   
