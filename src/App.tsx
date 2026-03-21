@@ -221,33 +221,48 @@ const Page = ({ product, index, total, direction }: {
               <span className={`text-xl md:text-3xl font-serif font-bold ${product.name === "Mini M&M'S" ? "text-stone-900" : "text-white"}`}>{product.price}</span>
             </div>
             
-            <div className={`flex items-center ${product.name === "Mini M&M'S" ? "bg-white/60 text-stone-900 border-black/10" : "bg-black/40 text-white border-white/10"} backdrop-blur-md rounded-full p-1 border shadow-sm`}>
-              <button 
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className={`w-8 h-8 flex items-center justify-center rounded-full ${product.name === "Mini M&M'S" ? "hover:bg-black/5" : "hover:bg-white/20"} transition-all active:scale-90`}
-              >
-                <Minus size={14} />
-              </button>
-              <span className="w-8 md:w-10 text-center font-medium text-sm">{quantity}</span>
-              <button 
-                onClick={() => setQuantity(quantity + 1)}
-                className={`w-8 h-8 flex items-center justify-center rounded-full ${product.name === "Mini M&M'S" ? "hover:bg-black/5" : "hover:bg-white/20"} transition-all active:scale-90`}
-              >
-                <Plus size={14} />
-              </button>
-            </div>
+            {product.available !== false ? (
+              <div className={`flex items-center ${product.name === "Mini M&M'S" ? "bg-white/60 text-stone-900 border-black/10" : "bg-black/40 text-white border-white/10"} backdrop-blur-md rounded-full p-1 border shadow-sm`}>
+                <button 
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className={`w-8 h-8 flex items-center justify-center rounded-full ${product.name === "Mini M&M'S" ? "hover:bg-black/5" : "hover:bg-white/20"} transition-all active:scale-90`}
+                >
+                  <Minus size={14} />
+                </button>
+                <span className="w-8 md:w-10 text-center font-medium text-sm">{quantity}</span>
+                <button 
+                  onClick={() => setQuantity(quantity + 1)}
+                  className={`w-8 h-8 flex items-center justify-center rounded-full ${product.name === "Mini M&M'S" ? "hover:bg-black/5" : "hover:bg-white/20"} transition-all active:scale-90`}
+                >
+                  <Plus size={14} />
+                </button>
+              </div>
+            ) : (
+              <div className={`px-4 py-2 rounded-full text-xs font-medium uppercase tracking-widest ${product.name === "Mini M&M'S" ? "bg-stone-200 text-stone-600" : "bg-white/10 text-white/60"}`}>
+                Bientôt disponible
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 gap-2">
-            <motion.button 
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleOrder}
-              className="bg-[#25D366] text-white px-6 py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-[#128C7E] transition-all shadow-lg font-bold"
-            >
-              <MessageCircle size={20} fill="white" />
-              <span className="text-xs md:text-sm uppercase tracking-widest">Commander via WhatsApp</span>
-            </motion.button>
+            {product.available !== false ? (
+              <motion.button 
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleOrder}
+                className="bg-[#25D366] text-white px-6 py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-[#128C7E] transition-all shadow-lg font-bold"
+              >
+                <MessageCircle size={20} fill="white" />
+                <span className="text-xs md:text-sm uppercase tracking-widest">Commander via WhatsApp</span>
+              </motion.button>
+            ) : (
+              <button 
+                disabled
+                className={`px-6 py-4 rounded-xl flex items-center justify-center gap-3 transition-all font-bold cursor-not-allowed ${product.name === "Mini M&M'S" ? "bg-stone-300 text-stone-500" : "bg-white/5 text-white/40 border border-white/10"}`}
+              >
+                <span className="text-xs md:text-sm uppercase tracking-widest">Indisponible pour le moment</span>
+              </button>
+            )}
           </div>
         </motion.div>
       </div>
