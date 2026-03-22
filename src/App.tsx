@@ -44,7 +44,8 @@ const Page = ({ product, index, total, direction }: {
 
   const productVideos: Record<string, string> = {
     "Kinder Bueno": "https://image2url.com/r2/default/videos/1773063494650-5da6f4ce-0781-4068-8694-7ddf5829e551.mp4",
-    "Mini M&M'S": "https://image2url.com/r2/default/videos/1773066092696-402ef6bb-19be-4578-bc89-a548c098eb36.mp4"
+    "Mini M&M'S": "https://image2url.com/r2/default/videos/1773066092696-402ef6bb-19be-4578-bc89-a548c098eb36.mp4",
+    "Biscuit Nutella": "https://image2url.com/r2/default/videos/1774140719969-45600ee8-0181-4fa2-9ad8-33affe449a32.mp4"
   };
   const videoUrl = productVideos[product.name];
 
@@ -65,9 +66,9 @@ const Page = ({ product, index, total, direction }: {
 
   return (
     <motion.div
-      initial={{ rotateY: direction > 0 ? 90 : -90, opacity: 0, scale: 0.95 }}
-      animate={{ rotateY: 0, opacity: 1, scale: 1 }}
-      exit={{ rotateY: direction > 0 ? -90 : 90, opacity: 0, scale: 0.95 }}
+      initial={{ rotateY: direction > 0 ? 90 : -90, opacity: 0 }}
+      animate={{ rotateY: 0, opacity: 1 }}
+      exit={{ rotateY: direction > 0 ? -90 : 90, opacity: 0 }}
       transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
       className={`absolute inset-0 w-full h-full shadow-2xl rounded-xl md:rounded-r-2xl overflow-hidden flex flex-col md:flex-row border border-white/10 ${
         product.name === "Mini M&M'S" 
@@ -93,87 +94,76 @@ const Page = ({ product, index, total, direction }: {
         </div>
       )}
       {/* Product Image Section - Made larger on mobile with Levitation Effect */}
-      <div className={`w-full md:w-1/2 h-[50%] md:h-full relative overflow-hidden group/img flex items-center justify-center ${videoUrl ? "p-0" : "p-4 md:p-12"}`}>
+      <div className="w-full md:w-1/2 h-[50%] md:h-full relative overflow-hidden group/img flex items-center justify-center p-4 md:p-12">
         <div className="relative w-full h-full flex items-center justify-center">
-          {videoUrl ? (
-            <div className="relative w-full h-full">
-              {isVideoLoading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-stone-900/20 backdrop-blur-md z-20">
-                  <motion.div 
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full"
-                  />
-                </div>
-              )}
-              <motion.video
-                key={videoUrl}
-                initial={{ opacity: 0, scale: 1.1 }}
+          <div className="relative flex-1 flex items-center justify-center">
+            {/* Levitation Shadow */}
+            <motion.div 
+              animate={{ 
+                scale: [1, 0.7, 1],
+                opacity: [0.3, 0.15, 0.3],
+                filter: ["blur(12px)", "blur(16px)", "blur(12px)"]
+              }}
+              transition={{ 
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="absolute bottom-[15%] w-24 md:w-32 h-4 md:h-6 bg-black/20 rounded-[100%] z-0"
+            />
+
+            {videoUrl ? (
+              <div className="relative w-full h-full flex items-center justify-center">
+                {isVideoLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-stone-900/20 backdrop-blur-md z-20">
+                    <motion.div 
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full"
+                    />
+                  </div>
+                )}
+                <motion.video
+                  key={videoUrl}
+                  initial={{ opacity: 0 }}
+                  animate={{ 
+                    opacity: isVideoLoading ? 0 : 1
+                  }}
+                  transition={{ 
+                    opacity: { duration: 0.5 }
+                  }}
+                  src={videoUrl}
+                  poster={product.image}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="auto"
+                  onLoadedData={() => setIsVideoLoading(false)}
+                  className="max-w-full max-h-[80%] object-contain drop-shadow-2xl z-10 relative"
+                />
+              </div>
+            ) : (
+              <motion.img 
+                initial={{ scale: 1, opacity: 0, rotate: -10 }}
                 animate={{ 
-                  opacity: isVideoLoading ? 0 : 1
+                  scale: 1, 
+                  opacity: 1, 
+                  rotate: 0
                 }}
                 transition={{ 
-                  opacity: { duration: 0.5 }
+                  default: { delay: 0.2, type: "spring", stiffness: 200, damping: 20 }
                 }}
-                src={videoUrl}
-                autoPlay
-                loop
-                muted
-                playsInline
-                preload="auto"
-                onLoadedData={() => setIsVideoLoading(false)}
-                className="w-full h-full object-cover z-10 relative"
+                whileHover={{ rotate: 2 }}
+                src={product.image} 
+                alt={product.name}
+                className="max-w-full max-h-[80%] object-contain drop-shadow-2xl z-10 relative"
+                referrerPolicy="no-referrer"
+                loading={index === 0 ? "eager" : "lazy"}
+                decoding="async"
               />
-              {/* Seamless transition gradients */}
-              <div className="absolute inset-0 z-11 pointer-events-none">
-                {/* Desktop: Fade to right */}
-                <div className="hidden md:block absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-black/60 to-transparent" />
-                {/* Mobile: Fade to bottom */}
-                <div className="md:hidden absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/60 to-transparent" />
-                {/* General subtle overlay */}
-                <div className="absolute inset-0 bg-black/10" />
-              </div>
-            </div>
-          ) : (
-            <div className="relative w-full h-full flex items-center justify-center">
-              {/* Main Product Image */}
-              <div className="relative flex-1 flex items-center justify-center">
-                {/* Levitation Shadow */}
-                <motion.div 
-                  animate={{ 
-                    scale: [1, 0.7, 1],
-                    opacity: [0.3, 0.15, 0.3],
-                    filter: ["blur(12px)", "blur(16px)", "blur(12px)"]
-                  }}
-                  transition={{ 
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                  className="absolute bottom-[15%] w-24 md:w-32 h-4 md:h-6 bg-black/20 rounded-[100%] z-0"
-                />
-
-                <motion.img 
-                  initial={{ scale: 0.8, opacity: 0, rotate: -10 }}
-                  animate={{ 
-                    scale: 1, 
-                    opacity: 1, 
-                    rotate: 0
-                  }}
-                  transition={{ 
-                    default: { delay: 0.2, type: "spring", stiffness: 200, damping: 20 }
-                  }}
-                  whileHover={{ scale: 1.05, rotate: 2 }}
-                  src={product.image} 
-                  alt={product.name}
-                  className="max-w-full max-h-[80%] object-contain drop-shadow-2xl z-10 relative"
-                  referrerPolicy="no-referrer"
-                  loading={index === 0 ? "eager" : "lazy"}
-                  decoding="async"
-                />
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
         
         <motion.div 
