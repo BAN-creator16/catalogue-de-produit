@@ -129,7 +129,7 @@ const Page = ({ product, index, total, direction }: {
                   loop
                   muted
                   playsInline
-                  preload="metadata"
+                  preload="auto"
                   onLoadedData={() => setIsVideoLoading(false)}
                   className="max-w-full max-h-[80%] object-contain drop-shadow-2xl z-10 relative"
                 />
@@ -569,11 +569,26 @@ export default function App() {
   const [direction, setDirection] = useState(0);
   const [activeCategory, setActiveCategory] = useState('Tous');
 
-  // Preload images for faster rendering
+  // Preload images and videos for faster rendering
   useEffect(() => {
     products.forEach(product => {
       const img = new Image();
       img.src = product.image;
+    });
+
+    // Preload videos to ensure instant playback
+    const videos = [
+      "https://image2url.com/r2/default/videos/1773063494650-5da6f4ce-0781-4068-8694-7ddf5829e551.mp4",
+      "https://image2url.com/r2/default/videos/1773066092696-402ef6bb-19be-4578-bc89-a548c098eb36.mp4",
+      "https://image2url.com/r2/default/videos/1774140719969-45600ee8-0181-4fa2-9ad8-33affe449a32.mp4",
+      "https://image2url.com/r2/default/videos/1775077047132-c2ae0cf0-f547-4bac-8931-2e6b6e39f7dc.mp4"
+    ];
+    videos.forEach(src => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'video';
+      link.href = src;
+      document.head.appendChild(link);
     });
   }, []);
 
@@ -610,7 +625,7 @@ export default function App() {
       {/* Book Wrapper with Perspective */}
       <div className="relative z-10 w-full max-w-6xl perspective-1000">
         {/* Book Container */}
-        <div className="relative w-full aspect-[4/7] md:aspect-[16/9] lg:aspect-[16/8] flex flex-col md:flex-row shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden bg-stone-900/20 backdrop-blur-xl border border-white/10 mb-8 md:mb-0">
+        <div className="relative w-full h-[85vh] min-h-[550px] max-h-[850px] lg:h-[80vh] lg:max-h-[800px] flex flex-col md:flex-row shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden bg-stone-900/20 backdrop-blur-xl border border-white/10 mb-8 md:mb-0">
           
           {/* Left Side (Static Spine/Back) */}
           <div className="hidden md:block w-16 bg-gradient-to-r from-[#1a120d] via-[#2b1d14] to-[#3d2b1f] shadow-[inset_-10px_0_20px_rgba(0,0,0,0.5)] border-r border-black/40 relative">
