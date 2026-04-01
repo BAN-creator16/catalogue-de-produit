@@ -22,17 +22,35 @@ export const products: Product[] = [
     id: 2,
     name: "Mini M&M'S",
     description: "De malicieuses billes de chocolat croquantes et colorées, offrant une explosion de saveurs à chaque bouchée. Le plaisir régressif par excellence, revisité avec élégance.",
-    price: "450 FCFA",
+    price: "500 FCFA",
     image: "https://imgs.search.brave.com/nFSleEr_DKNgbEDuq2eiOSLG-TF_r9CM26HumT7xmaw/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93d3cu/ZmlkdWNpYWwtb2Zm/aWNlLXNvbHV0aW9u/cy5mci9JTlRFUlNI/T1Avc3RhdGljL1dG/Uy9GT1MtRlItU2l0/ZS8tL0ZPUy9mcl9G/Ui9aT09NLzEzNzI0/My8xMzcyNDNfYi53/ZWJw",
     category: "Confiserie",
-    available: false
+    available: true
   },
   {
     id: 3,
     name: "Biscuit Nutella",
     description: "Le mariage irrésistible d'un biscuit doré au four et de l'onctuosité légendaire du Nutella. Un moment de pur bonheur croustillant à savourer seul ou à partager.",
-    price: "3700 FCFA",
+    price: "3500 FCFA",
     image: "https://imgs.search.brave.com/mWlXUpYNeatQdyBO8tUGgm14VQZsJTrfrmZKPsqvrE0/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jb29r/aW5nd2l0aG5vbm5h/LmNvbS9pbWFnZXMv/c3Rvcmllcy9ib3R0/ZWdhL05VVEVMTEEt/YmlzY3VpdC1zbWFs/bC5qcGc",
+    category: "Biscuits",
+    available: true
+  },
+  {
+    id: 9,
+    name: "Nutella B-ready (x6)",
+    description: "Une délicieuse gaufrette croustillante fourrée au Nutella et aux éclats de noisettes. Le format idéal pour une pause gourmande.",
+    price: "2200 FCFA",
+    image: "https://imgs.search.brave.com/eE2d3_z-hB0_43R1b_v-O5-yv8n1P_c74Z5qS5-4k5U/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93d3cu/bnV0ZWxsYS5jb20v/ZnIvZmlsZXMv/c3R5bGVzL251dGVs/bGFfaW1hZ2VfcGlj/dHVyZV9kZXNrdG9w/L3B1YmxpYy8yMDIw/LTA4L251dGVsbGEt/Yi1yZWFkeS02LXBp/ZWNlcy5wbmc_aXRv/az12T1ZfQ192bA",
+    category: "Biscuits",
+    available: true
+  },
+  {
+    id: 10,
+    name: "Nutella B-ready (x10)",
+    description: "Une délicieuse gaufrette croustillante fourrée au Nutella et aux éclats de noisettes. Le format familial pour partager des moments de plaisir.",
+    price: "3500 FCFA",
+    image: "https://i.pinimg.com/1200x/a9/2d/cb/a92dcb887a1b0e776a446d3780688aa1.jpg",
     category: "Biscuits",
     available: true
   },

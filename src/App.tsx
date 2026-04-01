@@ -9,25 +9,15 @@ const parsePrice = (priceStr: string): number => {
 };
 
 const AnimatedText = ({ text, className, delay = 0 }: { text: string; className?: string; delay?: number }) => {
-  const words = text.split(" ");
   return (
-    <div className={`flex flex-wrap ${className}`}>
-      {words.map((word, i) => (
-        <motion.span
-          key={i}
-          initial={{ opacity: 0, y: 10, filter: "blur(4px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{
-            duration: 0.5,
-            delay: delay + i * 0.05,
-            ease: [0.23, 1, 0.32, 1]
-          }}
-          className="mr-[0.25em]"
-        >
-          {word}
-        </motion.span>
-      ))}
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay, ease: "easeOut" }}
+      className={className}
+    >
+      {text}
+    </motion.div>
   );
 };
 
@@ -45,7 +35,8 @@ const Page = ({ product, index, total, direction }: {
   const productVideos: Record<string, string> = {
     "Kinder Bueno": "https://image2url.com/r2/default/videos/1773063494650-5da6f4ce-0781-4068-8694-7ddf5829e551.mp4",
     "Mini M&M'S": "https://image2url.com/r2/default/videos/1773066092696-402ef6bb-19be-4578-bc89-a548c098eb36.mp4",
-    "Biscuit Nutella": "https://image2url.com/r2/default/videos/1774140719969-45600ee8-0181-4fa2-9ad8-33affe449a32.mp4"
+    "Biscuit Nutella": "https://image2url.com/r2/default/videos/1774140719969-45600ee8-0181-4fa2-9ad8-33affe449a32.mp4",
+    "Nutella B-ready (x6)": "https://image2url.com/r2/default/videos/1775077047132-c2ae0cf0-f547-4bac-8931-2e6b6e39f7dc.mp4"
   };
   const videoUrl = productVideos[product.name];
 
@@ -84,11 +75,11 @@ const Page = ({ product, index, total, direction }: {
       {/* Background Elements for M&M'S - Trapped in ice effect */}
       {product.name === "Mini M&M'S" && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-          <div className="absolute top-[10%] left-[5%] w-32 h-32 bg-red-500/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute top-[40%] right-[10%] w-40 h-40 bg-yellow-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute bottom-[20%] left-[15%] w-36 h-36 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-          <div className="absolute top-[60%] left-[40%] w-28 h-28 bg-green-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }} />
-          <div className="absolute bottom-[10%] right-[30%] w-32 h-32 bg-orange-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '0.5s' }} />
+          <div className="absolute top-[10%] left-[5%] w-32 h-32 bg-red-500/20 rounded-full blur-2xl" />
+          <div className="absolute top-[40%] right-[10%] w-40 h-40 bg-yellow-400/20 rounded-full blur-2xl" />
+          <div className="absolute bottom-[20%] left-[15%] w-36 h-36 bg-blue-500/20 rounded-full blur-2xl" />
+          <div className="absolute top-[60%] left-[40%] w-28 h-28 bg-green-500/20 rounded-full blur-2xl" />
+          <div className="absolute bottom-[10%] right-[30%] w-32 h-32 bg-orange-500/20 rounded-full blur-2xl" />
           {/* Frost texture overlay */}
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/ice-age.png')] opacity-10 mix-blend-overlay" />
         </div>
@@ -138,7 +129,7 @@ const Page = ({ product, index, total, direction }: {
                   loop
                   muted
                   playsInline
-                  preload="auto"
+                  preload="metadata"
                   onLoadedData={() => setIsVideoLoading(false)}
                   className="max-w-full max-h-[80%] object-contain drop-shadow-2xl z-10 relative"
                 />
@@ -611,9 +602,9 @@ export default function App() {
       {/* Glass Background Effect */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 bg-[#2b1d14]" />
-        <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-[#5c4033]/40 rounded-full blur-[80px] animate-pulse" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-[#3d2b1f]/50 rounded-full blur-[80px] animate-pulse" style={{ animationDelay: '2s' }} />
-        <div className="absolute inset-0 backdrop-blur-2xl" />
+        <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-[#5c4033]/40 rounded-full blur-3xl" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-[#3d2b1f]/50 rounded-full blur-3xl" />
+        <div className="absolute inset-0 backdrop-blur-xl" />
       </div>
 
       {/* Book Wrapper with Perspective */}
