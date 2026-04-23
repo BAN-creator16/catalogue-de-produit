@@ -57,18 +57,17 @@ const Page = ({ product, index, total, direction }: {
 
   return (
     <motion.div
-      initial={{ rotateY: direction > 0 ? 90 : -90, opacity: 0 }}
-      animate={{ rotateY: 0, opacity: 1 }}
-      exit={{ rotateY: direction > 0 ? -90 : 90, opacity: 0 }}
-      transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-      className={`absolute inset-0 w-full h-full shadow-2xl rounded-xl md:rounded-r-2xl overflow-hidden flex flex-col md:flex-row border border-white/10 ${
+      custom={direction}
+      initial={{ x: direction > 0 ? "50%" : "-50%", opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: direction > 0 ? "-50%" : "50%", opacity: 0 }}
+      transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+      className={`absolute inset-0 w-full h-full shadow-2xl rounded-2xl overflow-hidden flex flex-col md:flex-row border border-white/10 ${
         product.name === "Mini M&M'S" 
           ? "bg-white/40 backdrop-blur-3xl" 
           : "bg-stone-900/40 backdrop-blur-xl"
       }`}
       style={{ 
-        transformOrigin: "left center", 
-        backfaceVisibility: "hidden",
         willChange: "transform, opacity"
       }}
     >
@@ -253,7 +252,7 @@ const Page = ({ product, index, total, direction }: {
   );
 };
 
-const Cover = ({ onStart }: { onStart: () => void; key?: React.Key }) => {
+const Cover = ({ onStart, direction }: { onStart: () => void; direction: number; key?: React.Key }) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -386,13 +385,13 @@ const Cover = ({ onStart }: { onStart: () => void; key?: React.Key }) => {
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ rotateY: -90, opacity: 0 }}
-      transition={{ duration: 0.8 }}
-      className="absolute inset-0 bg-stone-900/40 backdrop-blur-xl text-[#fffcf5] flex flex-col items-center justify-center p-8 md:p-12 pb-24 md:pb-12 text-center shadow-2xl rounded-r-lg border-l border-white/10 overflow-hidden"
+      custom={direction}
+      initial={{ x: direction < 0 ? "-50%" : "50%", opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: direction > 0 ? "-50%" : "50%", opacity: 0 }}
+      transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+      className="absolute inset-0 bg-stone-900/40 backdrop-blur-xl text-[#fffcf5] flex flex-col items-center justify-center p-8 md:p-12 pb-24 md:pb-12 text-center shadow-2xl rounded-2xl border border-white/10 overflow-hidden"
       style={{ 
-        transformOrigin: "left center",
         willChange: "transform, opacity"
       }}
     >
@@ -488,14 +487,15 @@ const Cover = ({ onStart }: { onStart: () => void; key?: React.Key }) => {
   );
 };
 
-const EndPage = ({ onRestart }: { onRestart: () => void; key?: React.Key }) => {
+const EndPage = ({ onRestart, direction }: { onRestart: () => void; direction: number; key?: React.Key }) => {
   return (
     <motion.div 
-      initial={{ rotateY: 90, opacity: 0, scale: 0.9 }}
-      animate={{ rotateY: 0, opacity: 1, scale: 1 }}
-      transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-      className="absolute inset-0 bg-stone-900/40 backdrop-blur-3xl text-[#fffcf5] flex flex-col items-center justify-center p-6 md:p-12 pb-24 md:pb-12 text-center shadow-2xl rounded-xl md:rounded-r-2xl border border-white/10 overflow-y-auto custom-scrollbar"
-      style={{ transformOrigin: "left center" }}
+      custom={direction}
+      initial={{ x: direction > 0 ? "50%" : "-50%", opacity: 0, scale: 0.95 }}
+      animate={{ x: 0, opacity: 1, scale: 1 }}
+      exit={{ x: direction > 0 ? "-50%" : "50%", opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+      className="absolute inset-0 bg-stone-900/40 backdrop-blur-3xl text-[#fffcf5] flex flex-col items-center justify-center p-6 md:p-12 pb-24 md:pb-12 text-center shadow-2xl rounded-2xl border border-white/10 overflow-y-auto custom-scrollbar"
     >
       <motion.div
         initial={{ y: 30, opacity: 0 }}
@@ -622,23 +622,18 @@ export default function App() {
         <div className="absolute inset-0 backdrop-blur-xl" />
       </div>
 
-      {/* Book Wrapper with Perspective */}
-      <div className="relative z-10 w-full max-w-6xl perspective-1000">
-        {/* Book Container */}
-        <div className="relative w-full h-[85vh] min-h-[550px] max-h-[850px] lg:h-[80vh] lg:max-h-[800px] flex flex-col md:flex-row shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden bg-stone-900/20 backdrop-blur-xl border border-white/10 mb-8 md:mb-0">
+      {/* Carousel Wrapper */}
+      <div className="relative z-10 w-full max-w-6xl">
+        {/* Carousel Container */}
+        <div className="relative w-full h-[85vh] min-h-[550px] max-h-[850px] lg:h-[80vh] lg:max-h-[800px] flex shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden bg-stone-900/20 backdrop-blur-xl border border-white/10 mb-8 md:mb-0">
           
-          {/* Left Side (Static Spine/Back) */}
-          <div className="hidden md:block w-16 bg-gradient-to-r from-[#1a120d] via-[#2b1d14] to-[#3d2b1f] shadow-[inset_-10px_0_20px_rgba(0,0,0,0.5)] border-r border-black/40 relative">
-            <div className="absolute inset-y-0 right-0 w-px bg-white/5" />
-          </div>
-
-          {/* Right Side (Flipping Pages) */}
-          <div className="flex-1 relative overflow-hidden">
+          {/* Carousel Slide Area */}
+          <div className="flex-1 relative overflow-hidden rounded-2xl">
             <AnimatePresence mode="wait" custom={direction}>
               {currentPage === -1 ? (
-                <Cover key="cover" onStart={nextPage} />
+                <Cover key="cover" onStart={nextPage} direction={direction} />
               ) : currentPage === filteredProducts.length ? (
-                <EndPage key="end" onRestart={() => setCurrentPage(-1)} />
+                <EndPage key="end" onRestart={() => setCurrentPage(-1)} direction={direction} />
               ) : (
                 <Page 
                   key={`${activeCategory}-${filteredProducts[currentPage].id}`}

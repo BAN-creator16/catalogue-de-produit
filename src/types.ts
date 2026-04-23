@@ -50,7 +50,7 @@ export const products: Product[] = [
     name: "Nutella B-ready (x10)",
     description: "Une délicieuse gaufrette croustillante fourrée au Nutella et aux éclats de noisettes. Le format familial pour partager des moments de plaisir.",
     price: "3500 FCFA",
-    image: "https://i.pinimg.com/1200x/a9/2d/cb/a92dcb887a1b0e776a446d3780688aa1.jpg",
+    image: "/nutella-bready-10.jpg",
     category: "Biscuits",
     available: true
   },
@@ -61,7 +61,7 @@ export const products: Product[] = [
     price: "14000 FCFA",
     image: "https://imgs.search.brave.com/TOmnMe7yH2bsULsHPQvndxAN_66x18J95E0hdeNcMCM/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jZG4x/MS5iaWdjb21tZXJj/ZS5jb20vcy0xY2Zo/bHBkNzRvL2ltYWdl/cy9zdGVuY2lsLzUw/MHg2NTkvcHJvZHVj/dHMvMzgzMTUvOTI5/MjYvMTI4MTI0X3c1/X182MjMyOC4xNzUx/MDI4MTMzLmpwZz9j/PTE",
     category: "Chocolat",
-    available: false
+    available: true
   },
   {
     id: 5,
@@ -70,7 +70,7 @@ export const products: Product[] = [
     price: "11000 FCFA",
     image: "https://imgs.search.brave.com/9Z4dl2AHte2LL82BMU_cY9nGGJLhoF7zj--juvvpDJs/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93d3cu/a2lvc2NsdWIuY29t/L2Nkbi9zaG9wL2Zp/bGVzL2ZvdG9zc2hv/cGkyTWVzYWRldHJh/YmFqbzEwLTEwMC5q/cGc_dj0xNzQxMzcz/ODg0JndpZHRoPTQ2/MA",
     category: "Chocolat",
-    available: false
+    available: true
   },
   {
     id: 6,
@@ -79,7 +79,7 @@ export const products: Product[] = [
     price: "10000 FCFA",
     image: "https://imgs.search.brave.com/58wJ72EEndWWUXAaJqG8DQwje7CJnDZsCNvIZ1niHn4/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9kcmlu/a3Nob3VzZTI0Ny5j/by51ay9jZG4vc2hv/cC9maWxlcy9CYXJv/bk1heGltZUJydXRH/b2xkUmVzZXJ2ZS53/ZWJwP3Y9MTc0MzE1/OTE1OQ",
     category: "Boissons",
-    available: false
+    available: true
   },
   {
     id: 8,
@@ -88,6 +88,6 @@ export const products: Product[] = [
     price: "500 FCFA",
     image: "https://imgs.search.brave.com/FgXMrlQ1UcfvfO-viM9sMnjUfdcINdT2apDYzH3w3oU/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93d3cu/Z3JvY2VyeS5jb20v/c3RvcmUvaW1hZ2Uv/Y2FjaGUvY2F0YWxv/Zy9kZWJldWtlbGFl/ci90dWMtc25hY2st/Y3JhY2tlci1iaXNj/dWl0LW9yaWdpbmFs/LWNsYXNzaWMtOC14/LTMtNS1CMDBPOTQ4/TUQwLTUwMHg1MDB3/LmpwZw",
     category: "Biscuits Salés",
-    available: false
+    available: true
   }
 ];
